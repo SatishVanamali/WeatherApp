@@ -54,6 +54,7 @@ struct WeatherLaunchScreen: View {
 
             Button("Get Weather") {
                 weatherAppVM.fetchWeather(for: searchField)
+                weatherAppVM.suggestions.removeAll()
             }
             .buttonStyle(.borderedProminent)
             .padding(.top, 10)
@@ -117,15 +118,39 @@ struct WeatherDetails: View {
     }
 }
 
+struct WeatherIconView: View {
+    @EnvironmentObject var weatherAppVM: WeatherAppViewModel
+
+    var body: some View {
+        if let icon = weatherAppVM.iconString, !icon.isEmpty,
+           let url = URL(string: "https://openweathermap.org/img/wn/\(icon)@2x.png") {
+            AsyncImage(url: url) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 50, height: 50)
+            } placeholder: {
+                ProgressView()
+            }
+        } else {
+            Image(systemName: "photo")
+                .resizable()
+                .frame(width: 50, height: 50)
+                .foregroundColor(.gray)
+        }
+    }
+}
+
 struct HistoryView: View {
     @EnvironmentObject var weatherAppVM: WeatherAppViewModel
     @Binding var searchField:String
+    
     var body: some View {
         if !weatherAppVM.searchHistory.isEmpty {
             let historyArray = Array(weatherAppVM.searchHistory) // break expression
             
             List {
-                Section(header: Text("Search History").font(.subheadline)) {
+                Section(header: Text("Recent Searches").font(.subheadline)) {
                     ForEach(historyArray, id: \.self) { history in
                         HStack {
                             Text(history)
@@ -146,29 +171,6 @@ struct HistoryView: View {
             }
             .listStyle(.plain)
             .frame(maxHeight: 200)
-        }
-    }
-}
-
-struct WeatherIconView: View {
-    @EnvironmentObject var weatherAppVM: WeatherAppViewModel
-
-    var body: some View {
-        if let icon = weatherAppVM.iconString, !icon.isEmpty,
-           let url = URL(string: "https://openweathermap.org/img/wn/\(icon)@2x.png") {
-            AsyncImage(url: url) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 50, height: 50)
-            } placeholder: {
-                ProgressView()
-            }
-        } else {
-            Image(systemName: "photo")
-                .resizable()
-                .frame(width: 50, height: 50)
-                .foregroundColor(.gray)
         }
     }
 }
