@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 class WeatherAppViewModel: ObservableObject {
-    private let apiKey = "5754238a2419ef9967482ee1d480b31d"
+    private let apiKey = "TestAPIKey"
     @Published var suggestions: [CitySuggestion] = []
     @Published var alertMessage: String?
     @Published var showAlert = false
